@@ -1,17 +1,45 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import "./assets/style.css"; // Check the path to your CSS file
+import quizService from "./quizService/index.js"
+import QuestionBox from "./components/Questionbox.js";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+class QuizJS extends Component {
+    state = {
+        qBank: []
+    };
+    getQuestions = () => {
+        quizService().then( question => {
+            this.setState({
+                qBank: question
+            });
+        });
+    }
+    computeAnswer = (answer, correctAnswer) => {
+        if (answer == correctAnswer) {
+            this.setState({
+                score: this.state.score +1
+            })
+        }
+    }
+    componentDidMount() {
+        this.getQuestions();
+    }
+    render() {
+        return (
+            <div className="container"> {/* Check that these class names match your CSS */}
+                <div className="title">QuizJS</div>
+                {this.state.qBank.length > 0 && this.state.qBank.map(({question, answers, 
+                correct, questionID}) => 
+                <QuestionBox 
+                question={question} 
+                options={answers} 
+                key={questionID}
+                selected={answer => this.computeAnswer(answer, correct)}/>
+                )}
+            </div>
+        );
+    }
+}
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+ReactDOM.render(<QuizJS />, document.getElementById("root"));
