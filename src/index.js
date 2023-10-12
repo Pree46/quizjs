@@ -1,68 +1,124 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import "./assets/style.css"; // Check the path to your CSS file
-import quizService from "./quizService/index.js"
+import "./assets/style.css";
+import quizService from "./quizService/index.js";
 import QuestionBox from "./components/Questionbox.js";
 import Result from "./components/Result";
+import LevelSelection from "./components/LevelSelection";
 
 class QuizJS extends Component {
-    state = {
-        qBank: [],
-        score: 0,
-        responses: 0
-    };
-    getQuestions = () => {
-        quizService().then( question => {
-            this.setState({
-                qBank: question
-            });
-        });
-    }
-    computeAnswer = (answer, correctAnswer) => {
-        if (answer === correctAnswer) {
-            this.setState({
-                score: this.state.score +1
-            });
+  state = {
+    qBank: {
+      easy: [],
+      medium: [],
+      hard: [],
+    },
+    score: 0,
+    responses: 0,
+    currentLevel: null, // Initialize currentLevel as null
+  };
+
+  // Load questions for all levels
+  getQuestions = () => {
+    quizService().then((questions) => {
+      const qBank = {
+        easy: [],
+        medium: [],
+        hard: [],
+      };
+
+      questions.forEach((question) => {
+        switch (question.level) {
+          case "easy":
+            qBank.easy.push(question);
+            break;
+          case "medium":
+            qBank.medium.push(question);
+            break;
+          case "hard":
+            qBank.hard.push(question);
+            break;
+          default:
+            break;
         }
-    this.setState({
+      });
 
-        responses: this.state.responses < 5 ?  this.state.responses + 1 : 5
-
+      this.setState({
+        qBank,
+      });
     });
-    };
+  };
 
-    playAgain = () => {
-        this.getQuestions();
-        this.setState({
-            score: 0,
-            responses: 0
-        }
-        );
-
+  // Compute the answer
+  computeAnswer = (answer, correctAnswer) => {
+    if (answer === correctAnswer) {
+      this.setState({
+        score: this.state.score + 1,
+      });
     }
-    componentDidMount() {
-        this.getQuestions();
-    }
-    render() {
-        return (
-            <div className="container"> {/* Check that these class names match your CSS */}
-                <div className="title">QuizJS</div>
-                {this.state.qBank.length > 0 &&
-                    this.state.responses < 5 &&
-                    this.state.qBank.map(({ question, answers, correct, questionID }) => (
-                    <QuestionBox
-                        question={question}
-                        options={answers}
-                        key={questionID}
-                        selected={(answer) => this.computeAnswer(answer, correct)}
-                    />
-                    ))}
+    this.setState({
+      responses:
+        this.state.responses < 5 ? this.state.responses + 1 : 5,
+    });
+  };
 
+  // Change the difficulty level
+  changeLevel = (level) => {
+    this.setState({
+      currentLevel: level,
+      score: 0,
+      responses: 0,
+    });
+    this.getQuestions();
+  };
 
-                {this.state.responses === 5 ? (<Result score={this.state.score}  playAgain={this.playAgain}/>) : null}
-            </div>
-        );
-    }
+  playAgain = () => {
+    this.changeLevel(null); // Set currentLevel to null to show the level selection page
+    this.getQuestions();
+    this.setState({
+      score: 0,
+      responses: 0,
+    });
+  };
+
+  componentDidMount() {
+    this.getQuestions();
+  }
+
+  render() {
+    const { currentLevel, score, responses, qBank } = this.state;
+    const questions = qBank[currentLevel];
+
+    return (
+      <div className="container">
+        {currentLevel === null ? (
+          <div className="title">
+            <h1>QuizJS</h1>
+            <LevelSelection onSelectLevel={this.changeLevel} />
+          </div>
+        ) : (
+          <>
+            {questions.length > 0 && responses < 5 && (
+              <>
+                {questions.map(({ question, answers, correct, questionID }) => (
+                  <QuestionBox
+                    key={questionID}
+                    question={question}
+                    options={answers}
+                    selected={(answer) => this.computeAnswer(answer, correct)}
+                  />
+                ))}
+              </>
+            )}
+            {responses === 5 ? (
+              <Result score={score} playAgain={this.playAgain} />
+            ) : null}
+          </>
+        )}
+      </div>
+    );
+  }
 }
 
 ReactDOM.render(<QuizJS />, document.getElementById("root"));
+
