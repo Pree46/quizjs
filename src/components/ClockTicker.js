@@ -1,9 +1,12 @@
 import React, { Component } from "react";
 
-class Timer extends Component {
-  state = {
-    time: 60,
-  };
+class ClockTicker extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      time: 60,
+    };
+  }
 
   componentDidMount() {
     this.interval = setInterval(this.tick, 1000);
@@ -20,8 +23,16 @@ class Timer extends Component {
   };
 
   render() {
-    return <div className="timer">Time left: {this.state.time} seconds</div>;
+    const { time } = this.state;
+
+    return (
+      <div className="timer">
+        <i className="fas fa-clock"></i> Time left: {time} seconds
+      </div>
+    );
   }
 }
 
-export default Timer;
+export default ClockTicker;
+
+

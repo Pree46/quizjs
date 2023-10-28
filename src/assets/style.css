@@ -8,13 +8,13 @@
 }
 
 body {
-  background-color: #f4f4f4; /* Updated background color */
+  background-color: #f4f4f4;
 }
 
 .container {
   width: 80%;
   max-width: 800px;
-  margin: 10% 25%;
+  margin: 10% auto;
   padding: 20px;
   background-color: #ffffff;
   border-radius: 10px;
@@ -35,7 +35,7 @@ body {
   font-size: 1.2em;
   font-weight: bold;
   margin-bottom: 10px;
-  color: #333333; /* Improved text color */
+  color: #333333;
 }
 
 .questionBox {
@@ -74,7 +74,7 @@ body {
   font-size: 2em;
   font-weight: bold;
   margin-top: 20px;
-  color: #007bff; /* Updated score color */
+  color: #007bff;
 }
 
 .playBtn {
@@ -119,3 +119,50 @@ body {
 .level-selection button:hover {
   background-color: #0056b3;
 }
+.timer {
+  font-size: 20px;
+  color: #032346;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.timer i {
+  margin-right: 5px;
+}
+
+/* Media Queries for Mobile Devices */
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+    margin: 10% auto;
+  }
+  
+  .question {
+    font-size: 1em;
+  }
+  
+  .answerBtn {
+    font-size: 1em;
+    padding: 10px;
+  }
+  
+  .score {
+    font-size: 1.5em;
+  }
+  
+  .playBtn {
+    font-size: 1em;
+    padding: 10px 20px;
+  }
+  
+  .level-selection h2 {
+    font-size: 1.2em;
+  }
+  
+  .level-selection button {
+    font-size: 1em;
+    padding: 10px 20px;
+  }
+}
+

@@ -5,8 +5,13 @@ import quizService from "./quizService/index.js";
 import QuestionBox from "./components/Questionbox.js";
 import Result from "./components/Result";
 import LevelSelection from "./components/LevelSelection";
+import ClockTicker from "./components/ClockTicker"; // Import the ClockTicker component
 
 class QuizJS extends Component {
+  constructor(props) {
+    super(props);
+    this.timerRef = React.createRef(); // Create a ref for the Timer component
+  }
   state = {
     qBank: {
       easy: [],
@@ -98,6 +103,11 @@ class QuizJS extends Component {
           </div>
         ) : (
           <>
+            {responses < 5 && (
+              <div className=".timer">
+                <ClockTicker /> {/* Add the ClockTicker component */}
+              </div>
+            )}
             {questions.length > 0 && responses < 5 && (
               <>
                 {questions.map(({ question, answers, correct, questionID }) => (
@@ -111,7 +121,13 @@ class QuizJS extends Component {
               </>
             )}
             {responses === 5 ? (
-              <Result score={score} playAgain={this.playAgain} />
+              <Result
+                score={score}
+                playAgain={this.playAgain}
+                timeTaken={
+                  this.timerRef.current ? this.timerRef.current.getTimeTaken() : 0
+                }
+              />
             ) : null}
           </>
         )}
@@ -121,4 +137,3 @@ class QuizJS extends Component {
 }
 
 ReactDOM.render(<QuizJS />, document.getElementById("root"));
-
